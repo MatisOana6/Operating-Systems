@@ -219,15 +219,193 @@ void parse(const char *path)
     free(h.header_sections);
 }
 
+int extractProcess(const char *file, int section, int line)
+{
+    Header h;
+
+    int fd = open(file, O_RDONLY);
+    read(fd, &h.magic, 1);
+    read(fd, &h.header_size, 2);
+    read(fd, &h.version, 4);
+    read(fd, &h.no_of_sections, 1);
+
+    if (h.magic != 'v')
+    {
+        printf("ERROR\nwrong magic\n");
+        close(fd);
+        return -1;
+    }
+
+    if (h.version < 56 || h.version > 96)
+    {
+        printf("ERROR\nwrong version\n");
+        close(fd);
+        return -1;
+    }
+
+    if (h.no_of_sections < 2 || h.no_of_sections > 16)
+    {
+        printf("ERROR\nwrong sect_nr\n");
+        close(fd);
+        return -1;
+    }
+
+    if (file == NULL)
+    {
+        printf("ERROR\n");
+        printf("invalid file");
+        return -1;
+    }
+    else if (section == -1)
+    {
+        printf("ERROR\n");
+        printf("invalid section");
+        return -1;
+    }
+    else if (line == -1)
+    {
+        printf("ERROR\n");
+        printf("invalid line");
+        return -1;
+    }
+
+    h.header_sections = (Header_section *)malloc(h.no_of_sections * sizeof(Header_section));
+
+    for (int i = 0; i < h.no_of_sections; i++)
+    {
+
+        read(fd, &h.header_sections[i].section_name, 8);
+        read(fd, &h.header_sections[i].section_type, 1);
+
+        if (h.header_sections[i].section_type != 45 && h.header_sections[i].section_type != 37 && h.header_sections[i].section_type != 92 && h.header_sections[i].section_type != 79)
+        {
+            printf("ERROR\nwrong sect_types\n");
+            free(h.header_sections);
+            return -1;
+        }
+
+        read(fd, &h.header_sections[i].section_offset, 4);
+        read(fd, &h.header_sections[i].section_size, 4);
+    }
+
+    lseek(fd, h.header_sections[section - 1].section_size + h.header_sections[section - 1].section_offset, SEEK_SET);
+
+    char c;
+    int count = 1;
+    int size;
+    printf("SUCCESS\n");
+    //printf("%d ", h.header_sections[section - 1].section_offset);
+    //printf("%d\n", h.header_sections[section - 1].section_size);
+
+    for (int i = h.header_sections[section - 1].section_size; i >= 0; i--)
+    {
+
+        read(fd, &c, 1);
+
+        if (c == '\n')
+        {
+            count++;
+        }
+
+        if (count == line)
+        {
+            lseek(fd, -2, SEEK_CUR);
+            do
+            {
+                read(fd, &c, 1);
+
+                lseek(fd, -2, SEEK_CUR);
+            } while (c != '\n' && c!='\0');
+
+            lseek(fd, 2, SEEK_CUR);
+            do
+            {
+                size = read(fd, &c, 1);
+                if (size == 1 && c!='\0')
+                    printf("%c", c);
+            } while (c != '\n' && c != '\0' && size == 1 );
+
+            free(h.header_sections);
+            return 0;
+        }
+
+        lseek(fd, -2, SEEK_CUR);
+    }
+    return 0;
+}
+
+/**
+int findAll(const char *file)
+{
+    DIR *dir = NULL;
+    struct dirent *entry = NULL;
+    char f_path[MAX_SIZE];
+    struct stat statbuf;
+
+    dir = opendir(path);
+    if (dir == NULL)
+    {
+        perror("ERROR");
+        return;
+    }
+    if (recursiv == 1)
+    {
+        printf("SUCCESS\n");
+        recursiv--;
+    }
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+        {
+            snprintf(f_path, MAX_SIZE, "%s/%s", path, entry->d_name);
+            if (lstat(f_path, &statbuf) == 0)
+            {
+                if (S_ISREG(statbuf.st_mode))
+                {
+                    if (strcmp(nameEnd, "") == 0)
+                    {
+                        if (st_size != -1 && statbuf.st_size < st_size)
+                            printf("%s\n", f_path);
+                        else if (st_size == -1)
+                            printf("%s\n", f_path);
+                    }
+                    else
+                    {
+                        if (compare(entry->d_name, nameEnd))
+                        {
+                            if (st_size != -1 && statbuf.st_size < st_size)
+                                printf("%s\n", f_path);
+                            else if (st_size == -1)
+                                printf("%s\n", f_path);
+                        }
+                    }
+                }
+
+                else if (S_ISDIR(statbuf.st_mode))
+                {
+                    if ((st_size == -1 && strcmp(nameEnd, "") == 0) || (strcmp(nameEnd, "") != 0 && compare(entry->d_name, nameEnd)))
+                        printf("%s\n", f_path);
+                    listRecursive(f_path, recursiv, st_size, nameEnd);
+                }
+            }
+        }
+    }
+    closedir(dir);
+}
+*/
+
 int main(int argc, char **argv)
 {
 
-    char path[1000] = "";
+    char path[MAX_SIZE] = "";
     int parse_var = 0;
     int recursive = 0;
     int list = 0;
     char ends_with[MAX_SIZE] = "";
     int smaller = -1;
+    int extract = 0;
+    int linie = -1;
+    int sectiune = -1;
 
     if (argc >= 2)
     {
@@ -273,7 +451,30 @@ int main(int argc, char **argv)
 
                 smaller = atoi(var);
             }
+            else if (strcmp(argv[i], "extract") == 0)
+            {
+                extract = 1;
+            }
+            else if (strncmp(argv[i], "section=", 8) == 0)
+            {
+                char v[100] = "";
+                for (int j = 8; j < strlen(argv[i]); j++)
+                {
+                    v[j - 8] = argv[i][j];
+                }
+                sectiune = atoi(v);
+            }
+            else if (strncmp(argv[i], "line=", 5) == 0)
+            {
+                char v[100] = "";
+                for (int j = 5; j < strlen(argv[i]); j++)
+                {
+                    v[j - 5] = argv[i][j];
+                }
+                linie = atoi(v);
+            }
         }
+
         if (list == 1 && recursive == 0)
         {
 
@@ -288,7 +489,10 @@ int main(int argc, char **argv)
         {
             parse(path);
         }
+        else if (extract == 1)
+        {
+            extractProcess(path, sectiune, linie);
+        }
         return 0;
     }
 }
-
