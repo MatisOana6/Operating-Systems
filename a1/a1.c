@@ -417,15 +417,17 @@ int findAll(const char *path, int recursiv)
                     }
                     free(h.header_sections);
                     close(fd);
-                e1:
+                    e1:{}
                 }
                 else if (S_ISDIR(statbuf.st_mode))
                 {
 
                     findAll(f_path, recursiv);
                 }
+                
             }
         }
+        
     }
     closedir(dir);
     return -1;
