@@ -13,13 +13,12 @@ void *thread_function(void *arg)
     info(BEGIN,5,4);
     info(BEGIN,5,5);
 
-     info(END,5,2);
-     info(END,5,3);
-     info(END,5,4);
-     info(END,5,5);
-     info(END,5,1);
-
-     return NULL;
+    info(END,5,5);
+    info(END,5,4);
+    info(END,5,2);
+    info(END,5,3);
+    info(END,5,1);
+    return NULL;
 }
 
 
@@ -137,7 +136,7 @@ int main(int argc, char **argv)
             else
             {
                 waitpid(pid6, NULL, 0);
-                pthread_cancel(tid);
+                pthread_join(tid, NULL);
                 info(END, 5, 0);
                 return 0;
             }
