@@ -117,6 +117,7 @@ int main(int argc, char **argv)
     else if (pid2 == 0)
     {
         info(BEGIN, 2, 0);
+        create_threads(3,6);
         pid3 = fork();
         if (pid3 == -1)
         {
