@@ -5,7 +5,15 @@
 #include <pthread.h>
 #include "a2_helper.h"
 
-void *thread_function(void *arg)
+#define NR_THREADS 39
+
+typedef struct{
+    int *array;
+    int start;
+    int end;
+}Thread_struct;
+
+void *thread_function1(void *arg)
 {
     info(BEGIN,5,1);
     info(BEGIN,5,3);
@@ -21,10 +29,35 @@ void *thread_function(void *arg)
     return NULL;
 }
 
+void *thread_function3(void *arg)
+{
+    info(BEGIN,3,1);
+    info(BEGIN,3,2);
+    info(BEGIN,3,3);
+    info(BEGIN,3,4);
+    info(BEGIN,3,5);
+    info(BEGIN,3,6);
+
+    info(END,3,6);
+    info(END,3,5);
+    info(END,3,4);
+    info(END,3,3);
+    info(END,3,2);
+    info(END,3,1);
+
+    return NULL;
+}
 
 int main(int argc, char **argv)
 {
-    pid_t pid2, pid3, pid4, pid5, pid6, pid7, pid8;
+    pid_t pid2=-1;
+    pid_t pid3=-1; 
+    pid_t pid4=-1;
+    pid_t pid5=-1;
+    pid_t pid6=-1;
+    pid_t pid7=-1;
+    pid_t pid8=-1;
+    
     init();
     info(BEGIN, 1, 0);
 
@@ -46,6 +79,9 @@ int main(int argc, char **argv)
         else if (pid3 == 0)
         {
             info(BEGIN, 3, 0);
+            pthread_t thread;
+            pthread_create(&thread,NULL,thread_function3,NULL);
+            pthread_join(thread,NULL);
             info(END, 3, 0);
             return 0;
         }
@@ -71,6 +107,9 @@ int main(int argc, char **argv)
                 else if (pid7 == 0)
                 {
                     info(BEGIN, 7, 0);
+                   // pthread_t tids[NR_THREADS];
+                   // pthread_create(&tids,)
+                  
                     info(END, 7, 0);
                     return 0;
                 }
@@ -103,7 +142,7 @@ int main(int argc, char **argv)
         {
             info(BEGIN, 5, 0);
             pthread_t tid;
-            pthread_create(&tid, NULL, thread_function, NULL);
+            pthread_create(&tid, NULL, thread_function1, NULL);
             pid6 = fork();
             if (pid6 == -1)
             {
