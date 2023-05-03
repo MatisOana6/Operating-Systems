@@ -118,7 +118,6 @@ int main(int argc, char **argv)
     {
         info(BEGIN, 2, 0);
         pid3 = fork();
-        create_threads(3,6);
         if (pid3 == -1)
         {
             perror("Nu se poate crea proces");
