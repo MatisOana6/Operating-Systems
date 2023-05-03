@@ -13,11 +13,13 @@
 
 sem_t *sem_p5_2;
 sem_t *sem_p5_3;
+sem_t *sem_p3_2;
+sem_t *sem_p7_4;
+sem_t *sem_p5_4;
 
 pthread_mutex_t lock_process5_3_2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock_process5_2_3 = PTHREAD_MUTEX_INITIALIZER;
-int process_5_t2 = 0;
-int process_5_t3 = 0;
+
 
 typedef struct
 {
@@ -80,6 +82,13 @@ void *thread_function(void *arg)
         info(BEGIN, process_id, thread_id);
         info(END, process_id, thread_id);
     }
+    else if(process_id == 3 && process_id == 5)
+    {
+        if(thread_id == 2 || thread_id == 4)
+        {
+            
+        }
+    }
     else
     {
         info(BEGIN, process_id, thread_id);
@@ -93,9 +102,15 @@ int main(int argc, char **argv)
 {
     sem_unlink("sem_p5_2");
     sem_unlink("sem_p5_3");
+    sem_unlink("sem_p3_2");
+    sem_unlink("sem_p5_4");
+    sem_unlink("sem_p7_4");
 
-    sem_p5_2 = sem_open("semaphore_proc_5_2", O_CREAT, 0644, 0);
-    sem_p5_3 = sem_open("semaphore_proc_5_3", O_CREAT, 0644, 0);
+    sem_p5_2 = sem_open("sem_p5_2", O_CREAT, 0644, 0);
+    sem_p5_3 = sem_open("sem_p5_3", O_CREAT, 0644, 0);
+    sem_p3_2 = sem_open("sem_p3_2", O_CREAT, 0644, 0);
+    sem_p5_4 = sem_open("sem_p5_4", O_CREAT, 0644, 0);
+    sem_p7_4 = sem_open("sem_p7_4", O_CREAT, 0644, 0);
 
     pid_t pid2 = -1;
     pid_t pid3 = -1;
