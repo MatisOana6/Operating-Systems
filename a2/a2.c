@@ -13,12 +13,21 @@
 
 sem_t *sem_p5_2;
 sem_t *sem_p5_3;
+sem_t *sem_p3_2;
 sem_t *sem_p3_4;
-sem_t *sem_p7_4;
+sem_t *sem_p3_5;
+sem_t *sem_p3_6;
+sem_t *sem_p3_5_6;
 sem_t *sem_p5_4;
+sem_t *sem_p7_4;
+sem_t *sem_p7 = NULL;
+sem_t *sem_t5_4_t3_4;
+
+int t5_4_finished = 0;
 
 pthread_mutex_t lock_process5_3_2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock_process5_2_3 = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lock_t5_4_t3_4 = PTHREAD_MUTEX_INITIALIZER;
 
 typedef struct
 {
@@ -28,7 +37,8 @@ typedef struct
 } Thread_struct;
 
 void *thread_function(void *arg);
-void create_threads(int process_nb, int thread_nb)
+
+void create_threads5(int thread_nb)
 {
     pthread_t threads[thread_nb];
     Thread_struct thread_vector[thread_nb];
@@ -36,7 +46,47 @@ void create_threads(int process_nb, int thread_nb)
     for (int i = 0; i < thread_nb; i++)
     {
         thread_vector[i] = (Thread_struct){
-            .process_number = process_nb,
+            .process_number = 5,
+            .thread_number = i + 1,
+        };
+        pthread_create(&threads[i], NULL, thread_function, &thread_vector[i]);
+    }
+
+    for (int i = 0; i < thread_nb; i++)
+    {
+        pthread_join(threads[i], NULL);
+    }
+}
+
+void create_threads3(int thread_nb)
+{
+    pthread_t threads[thread_nb];
+    Thread_struct thread_vector[thread_nb];
+
+    for (int i = 0; i < thread_nb; i++)
+    {
+        thread_vector[i] = (Thread_struct){
+            .process_number = 3,
+            .thread_number = i + 1,
+        };
+        pthread_create(&threads[i], NULL, thread_function, &thread_vector[i]);
+    }
+
+    for (int i = 0; i < thread_nb; i++)
+    {
+        pthread_join(threads[i], NULL);
+    }
+}
+
+void create_threads7(int thread_nb)
+{
+    pthread_t threads[thread_nb];
+    Thread_struct thread_vector[thread_nb];
+
+    for (int i = 0; i < thread_nb; i++)
+    {
+        thread_vector[i] = (Thread_struct){
+            .process_number = 7,
             .thread_number = i + 1,
         };
         pthread_create(&threads[i], NULL, thread_function, &thread_vector[i]);
@@ -81,10 +131,43 @@ void *thread_function(void *arg)
         info(BEGIN, process_id, thread_id);
         info(END, process_id, thread_id);
     }
-    else if (process_id != 7)
+    else if (process_id == 7)
     {
+        sem_wait(sem_p7);
         info(BEGIN, process_id, thread_id);
         info(END, process_id, thread_id);
+        sem_post(sem_p7);
+    }
+
+    else if ((process_id == 3 && thread_id == 2) || (process_id == 3 && thread_id == 4) || (process_id == 5 && thread_id == 4))
+    {
+        if (process_id == 3 && thread_id == 2)
+        {
+            info(BEGIN, process_id, thread_id);
+            info(END, process_id, thread_id);
+            sem_post(sem_p3_2);
+        }
+
+        else if (process_id == 5 && thread_id == 4)
+        {
+            sem_wait(sem_p3_2);
+            info(BEGIN, process_id, thread_id);
+            pthread_mutex_lock(&lock_t5_4_t3_4); // lock the mutex
+            info(END, process_id, thread_id);
+            pthread_mutex_unlock(&lock_t5_4_t3_4); // unlock the mutex
+            sem_post(sem_t5_4_t3_4);
+            sem_post(sem_p5_4);
+        }
+
+        else if (process_id == 3 && thread_id == 4)
+        {
+            sem_wait(sem_t5_4_t3_4);
+            sem_wait(sem_p5_4);
+            info(BEGIN, process_id, thread_id);
+            pthread_mutex_lock(&lock_t5_4_t3_4); // lock the mutex
+            info(END, process_id, thread_id);
+            pthread_mutex_unlock(&lock_t5_4_t3_4); // unlock the mutex
+        }
     }
     else
     {
@@ -99,15 +182,30 @@ int main(int argc, char **argv)
 {
     sem_unlink("sem_p5_2");
     sem_unlink("sem_p5_3");
+    sem_unlink("sem_p3_2");
     sem_unlink("sem_p3_4");
+    sem_unlink("sem_p3_5");
+    sem_unlink("sem_p3_6");
     sem_unlink("sem_p5_4");
     sem_unlink("sem_p7_4");
+    sem_unlink("sem_p7");
 
     sem_p5_2 = sem_open("sem_p5_2", O_CREAT, 0644, 0);
     sem_p5_3 = sem_open("sem_p5_3", O_CREAT, 0644, 0);
+    sem_p3_2 = sem_open("sem_p3_2", O_CREAT, 0644, 0);
     sem_p3_4 = sem_open("sem_p3_4", O_CREAT, 0644, 0);
+    sem_p3_5 = sem_open("sem_p3_5", O_CREAT, 0644, 0);
+    sem_p3_6 = sem_open("sem_p3_6", O_CREAT, 0644, 0);
     sem_p5_4 = sem_open("sem_p5_4", O_CREAT, 0644, 0);
     sem_p7_4 = sem_open("sem_p7_4", O_CREAT, 0644, 0);
+    sem_t5_4_t3_4 = sem_open("sem_t5_4_t3_4", O_CREAT, 0644, 0);
+
+    sem_p7 = sem_open("sem_p7", O_CREAT, 0644, 0);
+    if (sem_p7 == NULL)
+    {
+        perror("semaphore not working properly!");
+        return -1;
+    }
 
     pid_t pid2 = -1;
     pid_t pid3 = -1;
@@ -129,7 +227,7 @@ int main(int argc, char **argv)
     else if (pid2 == 0)
     {
         info(BEGIN, 2, 0);
-        create_threads(3, 6);
+        create_threads3(NR_THREADS_3);
         pid3 = fork();
         if (pid3 == -1)
         {
@@ -155,7 +253,7 @@ int main(int argc, char **argv)
             else if (pid4 == 0)
             {
                 info(BEGIN, 4, 0);
-                create_threads(7,39);
+                create_threads7(NR_THREADS_7);
                 pid7 = fork();
                 if (pid7 == -1)
                 {
@@ -186,7 +284,7 @@ int main(int argc, char **argv)
     else
     {
         waitpid(pid2, NULL, 0);
-        create_threads(5, 5);
+        create_threads5(NR_THREADS_5);
         pid5 = fork();
 
         if (pid5 == -1)
@@ -241,6 +339,8 @@ int main(int argc, char **argv)
             return 0;
         }
     }
+    sem_close(sem_t5_4_t3_4);
+    sem_unlink("sem_t5_4_t3_4");
 
     return 0;
 }
