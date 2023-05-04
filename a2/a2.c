@@ -180,6 +180,8 @@ int main(int argc, char **argv)
     sem_init(sem_p3_2, 1, 0);
     sem_init(sem_t5_4_t3_4, 1, 0);
     sem_init(sem_p7, 1, 5);
+    sem_init(sem_p5_2, 1,0);
+    sem_init(sem_p5_3,1,0);
 
     info(BEGIN, 1, 0);
 
