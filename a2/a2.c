@@ -13,13 +13,12 @@
 
 sem_t *sem_p5_2;
 sem_t *sem_p5_3;
-sem_t *sem_p3_2;
+sem_t *sem_p3_4;
 sem_t *sem_p7_4;
 sem_t *sem_p5_4;
 
 pthread_mutex_t lock_process5_3_2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock_process5_2_3 = PTHREAD_MUTEX_INITIALIZER;
-
 
 typedef struct
 {
@@ -57,8 +56,8 @@ void *thread_function(void *arg)
 
     if (process_id != 5)
     {
-       info(BEGIN, process_id, thread_id);
-       info(END, process_id, thread_id);
+        info(BEGIN, process_id, thread_id);
+        info(END, process_id, thread_id);
     }
     else if (thread_id == 2 || thread_id == 3)
     {
@@ -77,17 +76,15 @@ void *thread_function(void *arg)
             sem_post(sem_p5_2);
         }
     }
-    else if(process_id != 3)
+    else if (process_id != 3)
     {
         info(BEGIN, process_id, thread_id);
         info(END, process_id, thread_id);
     }
-    else if(process_id == 3 && process_id == 5)
+    else if (process_id != 7)
     {
-        if(thread_id == 2 || thread_id == 4)
-        {
-            
-        }
+        info(BEGIN, process_id, thread_id);
+        info(END, process_id, thread_id);
     }
     else
     {
@@ -102,13 +99,13 @@ int main(int argc, char **argv)
 {
     sem_unlink("sem_p5_2");
     sem_unlink("sem_p5_3");
-    sem_unlink("sem_p3_2");
+    sem_unlink("sem_p3_4");
     sem_unlink("sem_p5_4");
     sem_unlink("sem_p7_4");
 
     sem_p5_2 = sem_open("sem_p5_2", O_CREAT, 0644, 0);
     sem_p5_3 = sem_open("sem_p5_3", O_CREAT, 0644, 0);
-    sem_p3_2 = sem_open("sem_p3_2", O_CREAT, 0644, 0);
+    sem_p3_4 = sem_open("sem_p3_4", O_CREAT, 0644, 0);
     sem_p5_4 = sem_open("sem_p5_4", O_CREAT, 0644, 0);
     sem_p7_4 = sem_open("sem_p7_4", O_CREAT, 0644, 0);
 
@@ -132,7 +129,7 @@ int main(int argc, char **argv)
     else if (pid2 == 0)
     {
         info(BEGIN, 2, 0);
-        create_threads(3,6);
+        create_threads(3, 6);
         pid3 = fork();
         if (pid3 == -1)
         {
@@ -158,6 +155,7 @@ int main(int argc, char **argv)
             else if (pid4 == 0)
             {
                 info(BEGIN, 4, 0);
+                create_threads(7,39);
                 pid7 = fork();
                 if (pid7 == -1)
                 {
