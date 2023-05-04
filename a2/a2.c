@@ -94,7 +94,7 @@ void *thread_function(void *arg)
     int process_id = t_struct->process_number;
     int thread_id = t_struct->thread_number;
 
-if ((process_id == 3 && thread_id == 2) || (process_id == 3 && thread_id == 4) || (process_id == 5 && thread_id == 4))
+    if ((process_id == 3 && thread_id == 2) || (process_id == 3 && thread_id == 4) || (process_id == 5 && thread_id == 4))
     {
         if (process_id == 3 && thread_id == 2)
         {
@@ -117,14 +117,13 @@ if ((process_id == 3 && thread_id == 2) || (process_id == 3 && thread_id == 4) |
             info(BEGIN, process_id, thread_id);
             info(END, process_id, thread_id);
         }
-    
     }
-   
+
     else if ((process_id == 5) && (thread_id == 2 || thread_id == 3))
     {
         if (thread_id == 3)
         {
-            info(BEGIN, process_id, thread_id);
+            info(BEGIN,process_id,thread_id);
             sem_post(sem_p5_3);
             sem_wait(sem_p5_2);
             info(END, process_id, thread_id);
@@ -137,7 +136,7 @@ if ((process_id == 3 && thread_id == 2) || (process_id == 3 && thread_id == 4) |
             sem_post(sem_p5_2);
         }
     }
-   
+
     else if (process_id == 7)
     {
         sem_wait(sem_p7);
@@ -178,8 +177,8 @@ int main(int argc, char **argv)
 
     init();
 
-    sem_init(sem_p3_2, 1, 1);
-    sem_init(sem_t5_4_t3_4, 1, 1);
+    sem_init(sem_p3_2, 1, 0);
+    sem_init(sem_t5_4_t3_4, 1, 0);
     sem_init(sem_p7, 1, 5);
 
     info(BEGIN, 1, 0);
@@ -317,3 +316,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
