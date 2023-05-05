@@ -68,7 +68,6 @@ void create_threads3()
         };
         pthread_create(&threads[i], NULL, thread_function, &thread_vector[i]);
     }
-
     for (int i = 0; i < NR_THREADS_3; i++)
     {
         pthread_join(threads[i], NULL);
@@ -173,8 +172,8 @@ int main(int argc, char **argv)
     sem_p5_3 = sem_open("sem_p5_3", O_CREAT, 0644, 0);
     sem_p3_2 = sem_open("sem_p3_2", O_CREAT, 0644, 0);
     sem_t5_4_t3_4 = sem_open("sem_t5_4_t3_4", O_CREAT, 0644, 0);
-
     sem_p7 = sem_open("sem_p7", O_CREAT, 0644, 5);
+
     init();
 
     sem_init(sem_p3_2, 1, 0);
@@ -184,7 +183,6 @@ int main(int argc, char **argv)
     sem_init(sem_p5_3, 1, 0);
 
     info(BEGIN, 1, 0);
-
     pid2 = fork();
     if (pid2 == -1)
     {
@@ -251,7 +249,6 @@ int main(int argc, char **argv)
     {
         create_threads5();
         pid5 = fork();
-
         if (pid5 == -1)
         {
             perror("Unsuccessful creation of child process");
