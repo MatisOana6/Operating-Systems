@@ -170,6 +170,7 @@ int main(int argc, char **argv)
     sem_p5_3 = sem_open("sem_p5_3", O_CREAT, 0644, 0);
     sem_p3_2 = sem_open("sem_p3_2", O_CREAT, 0644, 0);
     sem_t5_4_t3_4 = sem_open("sem_t5_4_t3_4", O_CREAT, 0644, 0);
+    
     sem_p7 = sem_open("sem_p7", O_CREAT, 0644, 5);
 
     pid_t pid2 = -1;
