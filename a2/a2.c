@@ -11,12 +11,20 @@
 #define NR_THREADS_5 5
 #define NR_THREADS_3 6
 
+pid_t pid2 = -1;
+pid_t pid3 = -1;
+pid_t pid4 = -1;
+pid_t pid5 = -1;
+pid_t pid6 = -1;
+pid_t pid7 = -1;
+pid_t pid8 = -1;
+
 sem_t *sem_p5_2;
 sem_t *sem_p5_3;
 sem_t *sem_p3_2;
 sem_t *sem_p7;
-
 sem_t *sem_t5_4_t3_4;
+
 pthread_mutex_t mutex_p7 = PTHREAD_MUTEX_INITIALIZER;
 
 typedef struct
@@ -28,32 +36,31 @@ typedef struct
 
 void *thread_function(void *arg);
 
-void create_threads5(int thread_nb)
+void create_threads5()
 {
-    pthread_t threads[thread_nb];
-    Thread_struct thread_vector[thread_nb];
+    pthread_t threads[NR_THREADS_5];
+    Thread_struct thread_vector[NR_THREADS_5];
 
-    for (int i = 0; i < thread_nb; i++)
+    for (int i = 0; i < NR_THREADS_5; i++)
     {
         thread_vector[i] = (Thread_struct){
             .process_number = 5,
-            .thread_number = i + 1,
+            .thread_number = i+1,
         };
         pthread_create(&threads[i], NULL, thread_function, &thread_vector[i]);
     }
-
-    for (int i = 0; i < thread_nb; i++)
+    for (int i = 0; i < NR_THREADS_5; i++)
     {
         pthread_join(threads[i], NULL);
     }
 }
 
-void create_threads3(int thread_nb)
+void create_threads3()
 {
-    pthread_t threads[thread_nb];
-    Thread_struct thread_vector[thread_nb];
+    pthread_t threads[NR_THREADS_3];
+    Thread_struct thread_vector[NR_THREADS_3];
 
-    for (int i = 0; i < thread_nb; i++)
+    for (int i = 0; i < NR_THREADS_3; i++)
     {
         thread_vector[i] = (Thread_struct){
             .process_number = 3,
@@ -62,18 +69,18 @@ void create_threads3(int thread_nb)
         pthread_create(&threads[i], NULL, thread_function, &thread_vector[i]);
     }
 
-    for (int i = 0; i < thread_nb; i++)
+    for (int i = 0; i < NR_THREADS_3; i++)
     {
         pthread_join(threads[i], NULL);
     }
 }
 
-void create_threads7(int thread_nb)
+void create_threads7()
 {
-    pthread_t threads[thread_nb];
-    Thread_struct thread_vector[thread_nb];
+    pthread_t threads[NR_THREADS_7];
+    Thread_struct thread_vector[NR_THREADS_7];
 
-    for (int i = 0; i < thread_nb; i++)
+    for (int i = 0; i < NR_THREADS_7; i++)
     {
         thread_vector[i] = (Thread_struct){
             .process_number = 7,
@@ -82,8 +89,7 @@ void create_threads7(int thread_nb)
 
         pthread_create(&threads[i], NULL, thread_function, &thread_vector[i]);
     }
-
-    for (int i = 0; i < thread_nb; i++)
+    for (int i = 0; i < NR_THREADS_7; i++)
     {
         pthread_join(threads[i], NULL);
     }
@@ -113,7 +119,6 @@ void *thread_function(void *arg)
 
         else if (process_id == 3 && thread_id == 4)
         {
-
             sem_wait(sem_t5_4_t3_4);
             info(BEGIN, process_id, thread_id);
             info(END, process_id, thread_id);
@@ -170,15 +175,6 @@ int main(int argc, char **argv)
     sem_t5_4_t3_4 = sem_open("sem_t5_4_t3_4", O_CREAT, 0644, 0);
 
     sem_p7 = sem_open("sem_p7", O_CREAT, 0644, 5);
-
-    pid_t pid2 = -1;
-    pid_t pid3 = -1;
-    pid_t pid4 = -1;
-    pid_t pid5 = -1;
-    pid_t pid6 = -1;
-    pid_t pid7 = -1;
-    pid_t pid8 = -1;
-
     init();
 
     sem_init(sem_p3_2, 1, 0);
@@ -198,7 +194,7 @@ int main(int argc, char **argv)
     else if (pid2 == 0)
     {
         info(BEGIN, 2, 0);
-        create_threads3(NR_THREADS_3);
+        create_threads3();
         pid3 = fork();
         if (pid3 == -1)
         {
@@ -223,7 +219,7 @@ int main(int argc, char **argv)
             else if (pid4 == 0)
             {
                 info(BEGIN, 4, 0);
-                create_threads7(NR_THREADS_7);
+                create_threads7();
                 pid7 = fork();
                 if (pid7 == -1)
                 {
@@ -253,7 +249,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        create_threads5(NR_THREADS_5);
+        create_threads5();
         pid5 = fork();
 
         if (pid5 == -1)
