@@ -32,7 +32,7 @@
 	Checking threads from the same process...
 		[1;32mCORRECT        [0m [5 point(s)]
 	Checking threads barrier...
-		the following threads are running while ending thread T7.14: 14
+		the following threads are running while ending thread T7.14: 14 15 30 31
 		[1;33mPARTIAL CORRECT[0m [2 point(s)]
 	Checking threads from different processes...
 		[1;32mCORRECT        [0m [5 point(s)]
@@ -42,9 +42,8 @@
 	Checking threads from the same process...
 		[1;32mCORRECT        [0m [5 point(s)]
 	Checking threads barrier...
-		the following threads are running while ending thread T7.14: 14
-		[1;33mPARTIAL CORRECT[0m [2 point(s)]
+		[1;32mCORRECT        [0m [5 point(s)]
 	Checking threads from different processes...
 		[1;32mCORRECT        [0m [5 point(s)]
-Total score: 91 / 100
-Assignment grade: 91.00 / 100
+Total score: 94 / 100
+Assignment grade: 94.00 / 100

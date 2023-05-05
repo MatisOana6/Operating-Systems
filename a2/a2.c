@@ -14,9 +14,10 @@
 sem_t *sem_p5_2;
 sem_t *sem_p5_3;
 sem_t *sem_p3_2;
-sem_t *sem_p7 = NULL;
+sem_t *sem_p7;
 
 sem_t *sem_t5_4_t3_4;
+pthread_mutex_t mutex_p7 = PTHREAD_MUTEX_INITIALIZER;
 
 typedef struct
 {
@@ -94,6 +95,8 @@ void *thread_function(void *arg)
     int process_id = t_struct->process_number;
     int thread_id = t_struct->thread_number;
 
+
+
     if ((process_id == 3 && thread_id == 2) || (process_id == 3 && thread_id == 4) || (process_id == 5 && thread_id == 4))
     {
         if (process_id == 3 && thread_id == 2)
@@ -141,8 +144,10 @@ void *thread_function(void *arg)
     {
         sem_wait(sem_p7);
         info(BEGIN, process_id, thread_id);
+        pthread_mutex_lock(&mutex_p7);
         info(END, process_id, thread_id);
         sem_post(sem_p7);
+        pthread_mutex_unlock(&mutex_p7);
     }
     else
     {
@@ -209,7 +214,6 @@ int main(int argc, char **argv)
         }
         else
         {
-            //  waitpid(pid3, NULL, 0);
 
             pid4 = fork();
             if (pid4 == -1)
@@ -250,8 +254,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        // waitpid(pid3, NULL, 0);
-        //  waitpid(pid2, NULL, 0);
+        
         create_threads5(NR_THREADS_5);
         pid5 = fork();
 
@@ -310,11 +313,16 @@ int main(int argc, char **argv)
             return 0;
         }
     }
-    sem_close(sem_t5_4_t3_4);
+    sem_unlink("sem_p7");
+    sem_unlink("sem_p5_2");
+    sem_unlink("sem_p5_3");
+    sem_unlink("sem_p3_2");
     sem_unlink("sem_t5_4_t3_4");
-    sem_unlink("sem_p7");
     sem_close(sem_p7);
-    sem_unlink("sem_p7");
+    sem_close(sem_p5_2);
+    sem_close(sem_p5_3);
+    sem_close(sem_p3_2);
+    sem_close(sem_t5_4_t3_4);
 
     return 0;
 }
