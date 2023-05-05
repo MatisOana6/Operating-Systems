@@ -95,8 +95,6 @@ void *thread_function(void *arg)
     int process_id = t_struct->process_number;
     int thread_id = t_struct->thread_number;
 
-
-
     if ((process_id == 3 && thread_id == 2) || (process_id == 3 && thread_id == 4) || (process_id == 5 && thread_id == 4))
     {
         if (process_id == 3 && thread_id == 2)
@@ -126,7 +124,7 @@ void *thread_function(void *arg)
     {
         if (thread_id == 3)
         {
-            info(BEGIN,process_id,thread_id);
+            info(BEGIN, process_id, thread_id);
             sem_post(sem_p5_3);
             sem_wait(sem_p5_2);
             info(END, process_id, thread_id);
@@ -170,7 +168,7 @@ int main(int argc, char **argv)
     sem_p5_3 = sem_open("sem_p5_3", O_CREAT, 0644, 0);
     sem_p3_2 = sem_open("sem_p3_2", O_CREAT, 0644, 0);
     sem_t5_4_t3_4 = sem_open("sem_t5_4_t3_4", O_CREAT, 0644, 0);
-    
+
     sem_p7 = sem_open("sem_p7", O_CREAT, 0644, 5);
 
     pid_t pid2 = -1;
@@ -186,15 +184,15 @@ int main(int argc, char **argv)
     sem_init(sem_p3_2, 1, 0);
     sem_init(sem_t5_4_t3_4, 1, 0);
     sem_init(sem_p7, 1, 5);
-    sem_init(sem_p5_2, 1,0);
-    sem_init(sem_p5_3,1,0);
+    sem_init(sem_p5_2, 1, 0);
+    sem_init(sem_p5_3, 1, 0);
 
     info(BEGIN, 1, 0);
 
     pid2 = fork();
     if (pid2 == -1)
     {
-        perror("Nu se poate crea proces");
+        perror("Unsuccessful creation of child process");
         return 1;
     }
     else if (pid2 == 0)
@@ -204,7 +202,7 @@ int main(int argc, char **argv)
         pid3 = fork();
         if (pid3 == -1)
         {
-            perror("Nu se poate crea proces");
+            perror("Unsuccessful creation of child process");
             return 1;
         }
         else if (pid3 == 0)
@@ -219,7 +217,7 @@ int main(int argc, char **argv)
             pid4 = fork();
             if (pid4 == -1)
             {
-                perror("Nu se poate crea proces");
+                perror("Unsuccessful creation of child process");
                 return 1;
             }
             else if (pid4 == 0)
@@ -229,7 +227,7 @@ int main(int argc, char **argv)
                 pid7 = fork();
                 if (pid7 == -1)
                 {
-                    perror("Nu se poate crea proces");
+                    perror("Unsuccessful creation of child process");
                     return 1;
                 }
                 else if (pid7 == 0)
@@ -255,13 +253,12 @@ int main(int argc, char **argv)
     }
     else
     {
-        
         create_threads5(NR_THREADS_5);
         pid5 = fork();
 
         if (pid5 == -1)
         {
-            perror("Nu se poate crea proces");
+            perror("Unsuccessful creation of child process");
             return 1;
         }
         else if (pid5 == 0)
@@ -271,7 +268,7 @@ int main(int argc, char **argv)
             pid6 = fork();
             if (pid6 == -1)
             {
-                perror("Nu se poate crea proces");
+                perror("Unsuccessful creation of child process");
                 return 1;
             }
             else if (pid6 == 0)
@@ -281,7 +278,7 @@ int main(int argc, char **argv)
                 pid8 = fork();
                 if (pid8 == -1)
                 {
-                    perror("Nu se poate crea proces");
+                    perror("Unsuccessful creation of child process");
                     return 1;
                 }
                 else if (pid8 == 0)
@@ -306,7 +303,6 @@ int main(int argc, char **argv)
         }
         else
         {
-            // waitpid(pid5, NULL, 0);
             waitpid(pid3, NULL, 0);
             waitpid(pid2, NULL, 0);
             waitpid(pid5, NULL, 0);
@@ -314,17 +310,17 @@ int main(int argc, char **argv)
             return 0;
         }
     }
+    sem_close(sem_p5_3);
+    sem_close(sem_p5_2);
+    sem_close(sem_p7);
+    sem_close(sem_t5_4_t3_4);
+    sem_close(sem_p3_2);
+
     sem_unlink("sem_p7");
     sem_unlink("sem_p5_2");
     sem_unlink("sem_p5_3");
     sem_unlink("sem_p3_2");
     sem_unlink("sem_t5_4_t3_4");
-    sem_close(sem_p7);
-    sem_close(sem_p5_2);
-    sem_close(sem_p5_3);
-    sem_close(sem_p3_2);
-    sem_close(sem_t5_4_t3_4);
 
     return 0;
 }
-
