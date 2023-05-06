@@ -45,7 +45,7 @@ void create_threads5()
     {
         thread_vector[i] = (Thread_struct){
             .process_number = 5,
-            .thread_number = i+1,
+            .thread_number = i + 1,
         };
         pthread_create(&threads[i], NULL, thread_function, &thread_vector[i]);
     }
