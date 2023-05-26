@@ -1,0 +1,54 @@
+[1;35mTesting ping...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting shm1...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting shm_write...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting map_inexistent...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting map1...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting read_offset...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting read_section...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting read_logical...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+
+Total score: 0 / 80
+Assignment grade: 0.00 / 100
+[1;35mTesting ping...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting shm1...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting shm_write...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting map_inexistent...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting map1...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting read_offset...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting read_section...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+[1;35mTesting read_logical...[0m
+	[1;31mTIME LIMIT EXCEEDED[0m
+Test score: 0 / 10
+
+Total score: 0 / 80
+Assignment grade: 0.00 / 100
