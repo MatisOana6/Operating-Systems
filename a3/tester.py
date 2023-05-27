@@ -5,7 +5,7 @@ import argparse
 
 A3_PROG = "a3"
 
-VERBOSE = False
+VERBOSE = True
 TIME_LIMIT = 3
 
 COMPILE_LOG_FILE_NAME = "compile_log.txt"

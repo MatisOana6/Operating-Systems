@@ -145,7 +145,7 @@ int main()
                 nr++;
             }
             file_name[--nr] = 0;
-            printf("%s\n", file_name);
+            //  printf("%s\n", file_name);
 
             int fd_new = -1;
 
@@ -175,16 +175,78 @@ int main()
             read(fd1, &offset, 4);
             read(fd1, &nr_bytes, 4);
 
+            sharedChar = (volatile char *)mmap(0, 3734652, PROT_READ | PROT_WRITE,
+                                               MAP_SHARED, shmFd, 0);
             if (sharedChar != NULL && map_file != NULL && offset + nr_bytes <= map_file_size)
             {
                 memcpy((void *)sharedChar, (void *)map_file + offset, nr_bytes);
                 write(fd2, "READ_FROM_FILE_OFFSET$SUCCESS$", 30);
             }
+
             else
             {
                 write(fd2, "READ_FROM_FILE_OFFSET$ERROR$", 28);
             }
         }
+        else if (strcmp(command, "READ_FROM_FILE_SECTION$") == 0)
+        {
+            sharedChar = (volatile char *)mmap(0, 3734652, PROT_READ | PROT_WRITE, MAP_SHARED, shmFd, 0);
+
+            unsigned int offset;
+            unsigned int nr_bytes;
+            unsigned int no_section;
+            read(fd1, &no_section, sizeof(unsigned int));
+            read(fd1, &offset, sizeof(unsigned int));
+            read(fd1, &nr_bytes, sizeof(unsigned int));
+
+            char magic;
+            char version[5];
+            unsigned int section_size = 0;
+            unsigned int section_offset = 0;
+            unsigned int no_of_sections = 0;
+
+            memcpy((void *)&magic, (void *)map_file, 1);
+            memcpy((void *)version, (void *)map_file, 4);
+            version[4] = '\0';
+            memcpy((void *)&no_of_sections, (void *)map_file + 7, 1);
+
+            if ((magic == 'v') && (atoi(version) >= 56 && atoi(version) <= 96) && (no_of_sections >= 2 && no_of_sections <= 16) && (no_section >= 1 && no_section <= no_of_sections))
+            {
+                memcpy((void *)&section_offset, (void *)map_file + (8 + (no_of_sections * (8 + 1 + 4 + 4)) + ((no_section - 1) * (8 + 1 + 4 + 4))), sizeof(unsigned int));
+                memcpy((void *)&section_size, (void *)map_file + (8 + (no_of_sections * (8 + 1 + 4 + 4)) + ((no_section - 1) * (8 + 1 + 4 + 4))) + sizeof(unsigned int), sizeof(unsigned int));
+
+                if (offset + nr_bytes <= section_size)
+                {
+                    memcpy((void *)sharedChar, (void *)(map_file + section_offset + offset), nr_bytes);
+                    write(fd2, "READ_FROM_FILE_SECTION$SUCCESS$", 31);
+                }
+                else
+                {
+                    write(fd2, "READ_FROM_FILE_SECTION$ERROR$", 29);
+                }
+            }
+            else
+            {
+                write(fd2, "READ_FROM_FILE_SECTION$ERROR$", 29);
+            }
+        }
+        else if (strcmp(command, "READ_FROM_LOGICAL_SPACE_OFFSET$") == 0)
+        {
+            unsigned int logical_offset;
+            unsigned int nr_bytes;
+            read(fd1, &logical_offset, 4);
+            read(fd1, &nr_bytes, 4);
+            char magic;
+            char *version = (char *)malloc(sizeof(char) * 5);
+
+            unsigned int no_of_sections = 0;
+
+            memcpy((void *)&magic, (void *)map_file, 1);
+            memcpy((void *)&version, (void *)map_file, 4);
+            version[4] = '\0';
+            memcpy((void *)&no_of_sections, (void *)map_file + 7, 1);
+        }
+
         else if (strcmp(command, "EXIT$") == 0)
         {
             // Close the pipes and free the memory
